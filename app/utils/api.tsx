@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserResponse } from '../types/user';
+import { User, UserResponse } from '../types/user';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -18,7 +18,14 @@ function getErrorMessage(error: unknown): string {
   }
   return "Error desconocido";
 }
-
+export const getUser = async (id: number): Promise<User> => {
+  try {
+    const response = await api.get(`/users/${id}`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
+  }
+}
 export const getUsers = async (page: number = 1): Promise<UserResponse> => {
   try {
     const response = await api.get(`/users`, {

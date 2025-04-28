@@ -27,8 +27,8 @@ const Navbar = () => {
 
   const handleLogin = async (email: string, password: string) => {
     const data = await loginUser(email, password);
-    console.log("Ingresó");
     login(data.token);
+    closeModal();
     router.push("/gallery");
   };
 
