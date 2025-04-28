@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
+import { ModalProvider } from "./context/ModalContext";
 
 
 export const metadata: Metadata = {
@@ -14,13 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
-      <body>
-      <Navbar />
-      <main>
-        {children}
-      </main>
-      </body>
-    </html>
+    <AuthProvider>
+      <ModalProvider>
+      <html>
+        <body className="bg-gray-100 dark:bg-gray-900 relative">
+        <Navbar />
+        <main>
+          {children}
+        </main>
+        </body>
+      </html>
+      </ModalProvider>
+    </AuthProvider>
   );
 }

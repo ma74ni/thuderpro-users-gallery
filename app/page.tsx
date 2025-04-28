@@ -1,56 +1,47 @@
 'use client';
-
-import { useEffect, useState } from "react";
-import { getUsers } from "./utils/api";
-import { User } from "./types/user";
+import Image from 'next/image';
+import { useAuth } from './context/AuthContext';
+import { useRouter } from "next/navigation";
+import { useModal } from './context/ModalContext';
 
 export default function Home() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
+  const { isLoggedIn } = useAuth();
+  const { openModal } = useModal();
 
-
-  useEffect(() => {
-    const loaderUser = async () => {
-      setLoading(true);
-      setError(null);
-      try{
-        const data = await getUsers(page);
-        setUsers(data.data);
-        setTotalPages(data.total_pages);
-        setPage(data.page);
-        setLoading(false);
-        console.log("User data:", data);
-        console.log("Total pages:", totalPages);
-      }
-      catch (error) {
-        console.error("Error loading user:", error);
-        setError('Hubo un error al cargar los usuarios. Por favor, intenta de nuevo más tarde.');
-      }
-      finally {
-        setLoading(false);
-      }
+  const handleProtectedNavigation = () => {
+    if (isLoggedIn) {
+      router.push('/gallery');
+    } else {
+      openModal('login')
     }
-    loaderUser();
-  },[page]);
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">Galería de Usuarios</h1>
-      {loading && <p className="text-gray-500">Cargando...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {users.map((user) => (
-            <div key={user.id} className="bg-white shadow-md rounded-lg p-4">
-              
-              <h2 className="text-xl font-semibold mt-2">{`${user.first_name} ${user.last_name}`}</h2>
-              <p className="text-gray-600">{user.email}</p>
-            </div>
-          ))}
+      <div className="flex md:flex-row flex-col items-center justify-center">
+      <div className="basis-1/2 pt-12">
+        <h1 className="text-3xl md:text-7xl sm:text-5xl text-center font-bold mb-4 text-gray-900 dark:text-gray-100">
+          ¡Hola! Esta es la galería de usuarios
+        </h1>
+        <div className="flex justify-center">
+          <button type='button' onClick={handleProtectedNavigation} className="bg-violet-400 hover:bg-violet-600 dark:bg-cyan-400 dark:hover:bg-cyan-600 py-2 px-4 rounded-xl cursor-pointer">
+            Ver usuarios
+          </button>
         </div>
-      )}
+      </div>
+      <div className="basis-1/2">
+        <div className="h-24 w-24 flex-col items-center justify-center md:h-96 md:w-96 hidden md:flex">
+         <Image
+          src="/assets/images/slider.jpg"
+          alt="slider"
+          width={1408}
+          height={768}
+          sizes="100vw"
+        />
+        </div>
+      </div>
+    </div>
     </div>
   );
 }
